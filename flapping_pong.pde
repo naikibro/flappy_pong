@@ -212,6 +212,13 @@ void drawTopPipe() {
   rect(500 - 90, pipeCenter - pipeHeight / 2, 180 ,25);
 }
 
+void updatePipePosition() {
+  pipeCenter += random(-25, 25);
+  
+  // Ensure the pipes stay within the screen bounds
+  pipeCenter = constrain(pipeCenter, pipeHeight / 2, height - pipeHeight / 2);
+}
+
 /********* COLLISIONS *********/
 
 void touchRightWall(){
@@ -251,14 +258,14 @@ void touchLeftPadel() {
       ballY < padelLeftY + padelLeftHeight) {
     goEast = true;
     goRight();
-    
+    updatePipePosition();
     int randomDirection = int(random(2)); // 0 for up, 1 for down
     if (randomDirection == 0 && padelLeftY > 0) {
       padelLeftY -= 60;
     } else if (randomDirection == 1 && padelLeftY + padelLeftHeight < height) {
       padelLeftY += 60;
     }  }
-}
+  }
 
 void touchRightPadel() {
   if (ballX + ballSize/2 > padelRightX && 
@@ -266,6 +273,8 @@ void touchRightPadel() {
       ballY < padelRightY + padelRightHeight) {
     goEast = false;
     goLeft();
+    updatePipePosition();
+
     
     int randomDirection = int(random(2)); // 0 for up, 1 for down
     if (randomDirection == 0 && padelRightY > 0) {
