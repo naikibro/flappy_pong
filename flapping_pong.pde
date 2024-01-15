@@ -19,6 +19,7 @@ boolean goEast = true;
 // ball settings
 float ballX, ballY;
 float ballSpeed = 4;
+float ballYSpeed = 0;
 float ballSize = 20;
 color ballColor = color(0);
 
@@ -67,6 +68,7 @@ void draw() {
     initScreen();
   } else if (gameScreen == 1) { 
     gameScreen();
+    applyGravity();
   } else if (gameScreen == 2) { 
     gameOverScreen();
   }
@@ -81,7 +83,7 @@ public void mousePressed() {
   }
   
   if(gameScreen == 1) {
-     ballX += 10; 
+    ballYSpeed = -8;
   }
   
   if (gameScreen==2) {
@@ -129,7 +131,12 @@ void gameScreen() {
   {
     goLeft();
   }
-  // add game logic here
+  
+  // Display the score during the game
+  textAlign(LEFT);
+  fill(52, 73, 94);
+  textSize(20);
+  text("Score: " + score/5, 20, 30);
 }
 void gameOverScreen() {
   background(44, 62, 80);
@@ -138,7 +145,7 @@ void gameOverScreen() {
   textSize(12);
   text("Your Score", width/2, height/2 - 120);
   textSize(130);
-  text(score, width/2, height/2);
+  text(score/5, width/2, height/2);
   textSize(15);
   text("Click to Restart", width/2, height-30);
 }
@@ -152,6 +159,10 @@ void goRight() {
    ballX += ballSpeed; 
 }
 
+void applyGravity() {
+  ballYSpeed += gravity;
+  ballY += ballYSpeed;
+}
 /********* OTHER FUNCTIONS *********/
 
 // This method sets the necessery variables to start the game  
@@ -160,6 +171,8 @@ void startGame() {
 }
 void gameOver() {
   gameScreen=2;
+  ballYSpeed = 0; // reset vertical speed on game over
+
 }
 
 void restart() {
@@ -216,12 +229,19 @@ void touchLeftWall(){
 void touchBottom(){
   if (ballY + ballSize/2 > height) {
     gameOver();
+    ballY = height - ballSize / 2; // ensure the ball doesn't go below the floor
   }
 }
 
 void touchSky() {
-  if (ballY - ballSize/2 < 0) {
+  if (ballY - ballSize/2 < 0 &&
+      ballX + ballSize / 2 > 500 - 90 && ballX - ballSize / 2 < 500 + 90
+  ) {
     gameOver();
+  }
+  
+    if (ballX > 500 && ballX < 500 + ballSize && gameScreen == 1) {
+    score++;
   }
 }
 
@@ -231,7 +251,13 @@ void touchLeftPadel() {
       ballY < padelLeftY + padelLeftHeight) {
     goEast = true;
     goRight();
-  }
+    
+    int randomDirection = int(random(2)); // 0 for up, 1 for down
+    if (randomDirection == 0 && padelLeftY > 0) {
+      padelLeftY -= 60;
+    } else if (randomDirection == 1 && padelLeftY + padelLeftHeight < height) {
+      padelLeftY += 60;
+    }  }
 }
 
 void touchRightPadel() {
@@ -240,6 +266,13 @@ void touchRightPadel() {
       ballY < padelRightY + padelRightHeight) {
     goEast = false;
     goLeft();
+    
+    int randomDirection = int(random(2)); // 0 for up, 1 for down
+    if (randomDirection == 0 && padelRightY > 0) {
+      padelRightY -= 60;
+    } else if (randomDirection == 1 && padelRightY + padelRightHeight < height) {
+      padelRightY += 60;
+    }
   }
 }
 
@@ -254,5 +287,6 @@ void touchTopPipe() {
   if (ballX + ballSize / 2 > 500 - 90 && ballX - ballSize / 2 < 500 + 90 &&
       ballY - ballSize / 2 < pipeCenter - pipeHeight / 2) {
     gameOver();
+    ballY = pipeCenter - pipeHeight / 2 + ballSize / 2; // adjust ball position on collision
   }
 }
