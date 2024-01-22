@@ -47,6 +47,8 @@ int healthBarWidth = 60;
 
 PImage photo;
 
+PImage photo1;
+
 
 /********* SETUP BLOCK *********/
 
@@ -55,8 +57,12 @@ void setup() {
   ballX=width/2;
   ballY=height/2;
   smooth();
-  photo = loadImage("bg.jpg");
+  photo = loadImage("game.jpg");
   photo.resize(1000,600);
+
+  photo1 = loadImage("home.jpg");
+  photo1.resize(1000,600);
+
 }
 
 /********* DRAW BLOCK *********/
@@ -64,12 +70,12 @@ void setup() {
 void draw() {
   // Display the contents of the current screen
 
-  if (gameScreen == 0) { 
+  if (gameScreen == 0) {
     initScreen();
-  } else if (gameScreen == 1) { 
+  } else if (gameScreen == 1) {
     gameScreen();
     applyGravity();
-  } else if (gameScreen == 2) { 
+  } else if (gameScreen == 2) {
     gameOverScreen();
   }
 }
@@ -77,15 +83,15 @@ void draw() {
 /********* INPUTS *********/
 
 public void mousePressed() {
-  // if we are on the initial screen when clicked, start the game 
-  if (gameScreen==0) { 
+  // if we are on the initial screen when clicked, start the game
+  if (gameScreen==0) {
     startGame();
   }
-  
+
   if(gameScreen == 1) {
     ballYSpeed = -8;
   }
-  
+
   if (gameScreen==2) {
     restart();
   }
@@ -95,12 +101,10 @@ public void mousePressed() {
 
 void initScreen() {
   background(236, 240, 241);
-  image(photo, 0, 0);
+  image(photo1, 0, 0);
   textAlign(CENTER);
-  fill(52, 73, 94);
+  fill(255);
   textSize(70);
-  text("Flappy Pong", width/2, height/2);
-  textSize(15); 
   text("Click to start", width/2, height-30);
 }
 void gameScreen() {
@@ -116,22 +120,22 @@ void gameScreen() {
   touchLeftWall();
   touchBottom();
   touchSky();
-  
+
   touchLeftPadel();
   touchRightPadel();
-  
+
   touchBottomPipe();
   touchTopPipe();
-  
+
   if(goEast)
   {
-     goRight(); 
+     goRight();
   }
   else
   {
     goLeft();
   }
-  
+
   // Display the score during the game
   textAlign(LEFT);
   fill(52, 73, 94);
@@ -152,11 +156,11 @@ void gameOverScreen() {
 
 /********* MOVEMENT *********/
 void goLeft() {
-   ballX -= ballSpeed; 
+   ballX -= ballSpeed;
 }
 
 void goRight() {
-   ballX += ballSpeed; 
+   ballX += ballSpeed;
 }
 
 void applyGravity() {
@@ -165,7 +169,7 @@ void applyGravity() {
 }
 /********* OTHER FUNCTIONS *********/
 
-// This method sets the necessery variables to start the game  
+// This method sets the necessery variables to start the game
 void startGame() {
   gameScreen=1;
 }
@@ -214,7 +218,7 @@ void drawTopPipe() {
 
 void updatePipePosition() {
   pipeCenter += random(-25, 25);
-  
+
   // Ensure the pipes stay within the screen bounds
   pipeCenter = constrain(pipeCenter, pipeHeight / 2, height - pipeHeight / 2);
 }
@@ -246,15 +250,15 @@ void touchSky() {
   ) {
     gameOver();
   }
-  
+
     if (ballX > 500 && ballX < 500 + ballSize && gameScreen == 1) {
     score++;
   }
 }
 
 void touchLeftPadel() {
-  if (ballX - ballSize/2 < padelLeftX + 10 && 
-      ballY > padelLeftY && 
+  if (ballX - ballSize/2 < padelLeftX + 10 &&
+      ballY > padelLeftY &&
       ballY < padelLeftY + padelLeftHeight) {
     goEast = true;
     goRight();
@@ -268,14 +272,14 @@ void touchLeftPadel() {
   }
 
 void touchRightPadel() {
-  if (ballX + ballSize/2 > padelRightX && 
-      ballY > padelRightY && 
+  if (ballX + ballSize/2 > padelRightX &&
+      ballY > padelRightY &&
       ballY < padelRightY + padelRightHeight) {
     goEast = false;
     goLeft();
     updatePipePosition();
 
-    
+
     int randomDirection = int(random(2)); // 0 for up, 1 for down
     if (randomDirection == 0 && padelRightY > 0) {
       padelRightY -= 60;
